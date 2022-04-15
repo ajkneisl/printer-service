@@ -6,15 +6,15 @@ plugins {
     application
     kotlin("jvm") version "1.6.20"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.20"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "dev.ajkneisl"
-version = "0.0.1"
+version = "0.0.2"
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 
-//    val isDevelopment: Boolean = project.ext.has("development")
-    val isDevelopment: Boolean = true
+    val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
@@ -55,4 +55,12 @@ dependencies {
     implementation("org.litote.kmongo:kmongo:4.5.1")
     implementation("org.json:json:20220320")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
+tasks {
+    shadowJar {
+        manifest {
+            attributes(Pair("Main-Class", "io.ktor.server.netty.EngineMain"))
+        }
+    }
 }

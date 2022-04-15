@@ -4,6 +4,6 @@ import org.litote.kmongo.KMongo
 
 object Mongo {
     val CLIENT by lazy {
-        KMongo.createClient(System.getenv("MONGO_URI"))
+        KMongo.createClient("mongodb+srv://ajkneisl:${System.getenv("MONGO_PW")}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
     }
 }
