@@ -2,9 +2,7 @@
 
 package dev.ajkneisl.home.printer.plugins
 
-import dev.ajkneisl.home.printer.authorize
 import dev.ajkneisl.home.printer.error.ServerError
-import dev.ajkneisl.home.printer.routines.goodMorning
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.locations.*
@@ -17,7 +15,6 @@ import io.ktor.server.routing.*
 fun Application.configureRouting() {
     install(AutoHeadResponse)
     install(DoubleReceive)
-    install(Locations)
 
     install(StatusPages) {
         exception<ServerError>() { call, cause ->
