@@ -1,7 +1,5 @@
 package dev.ajkneisl.home.printer.routines
 
-import dev.ajkneisl.home.printer.PrintHandler
-import dev.ajkneisl.home.printer.PrintHandler.feed
 import dev.ajkneisl.home.printer.WEB_CLI
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -40,16 +38,16 @@ suspend fun weatherRoutine() {
             TimeZone.getDefault().toZoneId()
         )
 
-    PrintHandler.print(
-        "Weather",
-        date,
-        qrCode = null,
-        "Sunrise: ${formatter.format(sunrise)}" feed 0,
-        "Sunset: ${formatter.format(sunset)}" feed 1,
-        "Current Temperature: ${current.getInt("temp")}F" feed 0,
-        "Feels Like: ${current.getInt("feels_like")}F" feed 0,
-        "High: ${daily.getJSONObject("temp").getInt("max")}F" feed 0,
-        "Low: ${daily.getJSONObject("temp").getInt("min")}F" feed 1,
-        "Weather: ${weather.getJSONObject(0).getString("description")}" feed 0
-    )
+//    PrintHandler.print(
+//        "Weather",
+//        date,
+//        qrCode = null,
+//        "Sunrise: ${formatter.format(sunrise)}" feed 0,
+//        "Sunset: ${formatter.format(sunset)}" feed 1,
+//        "Current Temperature: ${current.getInt("temp")}F" feed 0,
+//        "Feels Like: ${current.getInt("feels_like")}F" feed 0,
+//        "High: ${daily.getJSONObject("temp").getInt("max")}F" feed 0,
+//        "Low: ${daily.getJSONObject("temp").getInt("min")}F" feed 1,
+//        "Weather: ${weather.getJSONObject(0).getString("description")}" feed 0
+//    )
 }

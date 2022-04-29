@@ -50,11 +50,14 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("org.apache.logging.log4j:log4j-core:2.17.2")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+    implementation("io.ktor:ktor-server-websockets:$ktor_version")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     implementation("org.litote.kmongo:kmongo:4.5.1")
     implementation("org.json:json:20220320")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    implementation(files(("lib/printerlib-1.0.jar")))
 }
 
 tasks {

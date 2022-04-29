@@ -1,8 +1,9 @@
 package dev.ajkneisl.home.printer
 
-import dev.ajkneisl.home.printer.PrintHandler.feed
 import dev.ajkneisl.home.printer.error.AuthorizationError
-import dev.ajkneisl.printer.obj.PrintLine
+import dev.ajkneisl.home.printer.service.sendPrint
+import dev.ajkneisl.home.printer.service.sendPrints
+import dev.ajkneisl.printerlib.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -15,11 +16,14 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.util.*
+import kotlinx.coroutines.delay
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import java.util.*
+import javax.naming.ldap.Control
 
+/** a Todoist Task. Received through Todoist API. */
 @kotlinx.serialization.Serializable
 data class Task(
     val id: Long,
@@ -45,9 +49,7 @@ data class Task(
     }
 }
 
-/**
- * A due date for a Todoist [Task].
- */
+/** A due date for a Todoist [Task]. */
 @kotlinx.serialization.Serializable
 data class Due(
     val string: String,
@@ -58,31 +60,30 @@ data class Due(
     val lang: String? = null
 )
 
-private val TODOIST_WEB_CLI = HttpClient(CIO) {
-    defaultRequest {
-        header("Authorization", "Bearer ${System.getenv("TODOIST")}")
+/** Automatically authorized for Todoist. */
+private val TODOIST_WEB_CLI =
+    HttpClient(CIO) {
+        defaultRequest { header("Authorization", "Bearer ${System.getenv("TODOIST")}") }
+
+        install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
     }
 
-    install(ContentNegotiation) {
-        json(Json {
-            ignoreUnknownKeys = true
-        })
-    }
-}
-
+/** Configure Todoist routing. */
 fun Application.configureTodoist() {
     routing {
         route("/todoist") {
             post {
                 val headers = call.request.headers
 
-                if (!headers.contains("X-Todoist-Hmac-SHA256"))
-                    throw AuthorizationError()
+                if (!headers.contains("X-Todoist-Hmac-SHA256")) throw AuthorizationError()
 
                 val body = JSONObject(call.receiveText())
                 val eventData = body.getJSONObject("event_data")
 
-                PrintHandler.print("Todoist", body.getString("event_name"), "")
+                PrintHandler.print(
+                    PrintText(PrintDefaults.TITLE, 0, "Todoist"),
+                    PrintText(PrintDefaults.DEFAULT, 0, body.getString("event_name"))
+                )
 
                 call.respond(mapOf("response" to "OK"))
             }
@@ -110,10 +111,12 @@ fun Application.configureTodoist() {
     }
 }
 
+/** Get all tasks from Todoist API. */
 suspend fun getTasks(): List<Task> {
     return TODOIST_WEB_CLI.get("https://api.todoist.com/rest/v1/tasks").body()
 }
 
+/** Use [getTasks] to find tasks that are due today. */
 suspend fun getDueToday(): List<Task> {
     val calendar = Calendar.getInstance()
     val today = calendar.get(Calendar.DAY_OF_MONTH)
@@ -126,14 +129,17 @@ suspend fun getDueToday(): List<Task> {
     }
 }
 
+/** Find tasks that aren't completed and have a due date. */
 private suspend fun getUncompletedTasks(): List<Task> {
     return getTasks().filter { task -> !task.completed && task.due != null }
 }
 
+/** Find overdue tasks from [tasks]. */
 fun getOverdue(tasks: List<Task>): List<Task> {
     return tasks.filter(::isOverdue)
 }
 
+/** Check if [task] is overdue. */
 private fun isOverdue(task: Task): Boolean {
     val cal = Calendar.getInstance()
     val day = cal.get(Calendar.DAY_OF_MONTH)
@@ -162,48 +168,100 @@ suspend fun printout() {
         }
 
     val lines = mutableListOf<PrintLine>()
+    val title =
+        PrintOptions(
+            false,
+            bold = false,
+            justification = Justification.CENTER,
+            fontSize = 2,
+            font = 0,
+            whiteOnBlack = false
+        )
 
-    lines.add("OVERDUE (${overdue.size})" feed 0)
+    lines.add(PrintText(title, 1, "OVERDUE (${overdue.size})"))
     overdue.forEachIndexed { index, task ->
         val size = if (index == overdue.size - 1) 1 else 0
 
-        lines.add("${task.due?.date}: ${task.content}" feed size)
+        lines.add(PrintText(PrintDefaults.DEFAULT, size, "${task.due?.date}: ${task.content}"))
     }
 
-    lines.add("DUE (${due.size})" feed 0)
-    due.forEach { task -> lines.add("${task.due?.date}: ${task.content}" feed 0) }
+    lines.add(PrintText(title, 1, "DUE (${due.size})"))
+    due.forEachIndexed { index, task ->
+        val size = if (index == due.size - 1) 1 else 0
+
+        lines.add(PrintText(PrintDefaults.DEFAULT, size, "${task.due?.date}: ${task.content}"))
+    }
 
     PrintHandler.print(
-        "Todoist",
-        "Task Printout",
-        "https://todoist.com/app/today",
-        *lines.toTypedArray()
+        PrintImage("https://logodix.com/logo/1851750.png", Justification.CENTER, 1),
+        *lines.toTypedArray(),
+        PrintQrCode("https://todoist.com/app/today", 7, Justification.CENTER, 1)
     )
 }
 
+/** Individually printout all tasks with a due date. */
 suspend fun printoutAll() {
-    getTasks()
+    val tasks = getTasks()
         .filter { task -> !task.completed && task.due != null } // must have a due date
-        .forEach(::printTask)
+        .map { task ->
+            formatTask(task)
+        }
+
+    sendPrints(tasks)
 }
 
-private fun printTask(task: Task) {
+/** Print out [task]. */
+private fun formatTask(task: Task): Print {
     val lines = mutableListOf<PrintLine>()
 
-    if (task.description.isNotBlank()) lines.add(PrintLine(task.description, 2))
-
-    lines.add("Due: ${task.due?.date ?: "no due date"}" feed 0)
-    lines.add("Priority: ${task.priority}" feed 0)
-    lines.add("Project: ${task.projectId}" feed 0)
-    lines.add("Created At: ${task.created}" feed 0)
-    lines.add("Due at: ${task.due?.date ?: "No due date."}" feed 0)
+    if (task.description.isNotBlank())
+        lines.add(PrintText(PrintDefaults.DEFAULT, 2, task.description))
 
     if (isOverdue(task))
-        lines.add(PrintLine("Overdue", 0, bold = true))
+        lines.add(
+            PrintText(
+                PrintOptions(
+                    underline = false,
+                    bold = true,
+                    justification = Justification.CENTER,
+                    fontSize = 2,
+                    font = 0,
+                    whiteOnBlack = false
+                ),
+                0,
+                "Overdue"
+            )
+        )
 
-    PrintHandler.print("Task", task.content, task.url, *lines.toTypedArray())
+    lines.add(
+        PrintText(
+            PrintDefaults.DEFAULT,
+            1,
+            "Due: ${task.due?.date ?: "no due date"}",
+            "Priority: ${task.priority}",
+            "Project: ${task.projectId}",
+            "Created At: ${task.created}",
+            "Due at: ${task.due?.date ?: "No due date."}"
+        )
+    )
+
+    return Print(
+        UUID.randomUUID().toString(),
+        System.currentTimeMillis(),
+        listOf(
+            PrintImage("https://logodix.com/logo/1851750.png", Justification.CENTER, 1),
+            PrintText(PrintDefaults.SUB_TITLE, 0, task.content),
+            PrintText(PrintDefaults.DEFAULT, 2, task.description),
+            *lines.toTypedArray(),
+            PrintQrCode(task.url, 7, Justification.CENTER, 1)
+        )
+    )
 }
 
+/** Individually printout all tasks. */
 suspend fun overduePrintout() {
-    getOverdue(getUncompletedTasks()).forEach(::printTask)
+    val tasks = getOverdue(getUncompletedTasks())
+        .map { task -> formatTask(task) }
+
+    sendPrints(tasks)
 }

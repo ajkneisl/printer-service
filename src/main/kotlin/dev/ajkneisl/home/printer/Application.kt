@@ -5,6 +5,7 @@ import dev.ajkneisl.home.printer.plugins.configureMonitoring
 import dev.ajkneisl.home.printer.plugins.configureRouting
 import dev.ajkneisl.home.printer.plugins.configureSerialization
 import dev.ajkneisl.home.printer.routines.routineRouting
+import dev.ajkneisl.home.printer.service.registerWebsocket
 import io.ktor.server.application.*
 
 fun main(args: Array<String>): Unit =
@@ -18,4 +19,6 @@ fun Application.module() {
     configureSerialization()
     configureTodoist()
     routineRouting()
+    configurePurchaseAlerts()
+    registerWebsocket()
 }

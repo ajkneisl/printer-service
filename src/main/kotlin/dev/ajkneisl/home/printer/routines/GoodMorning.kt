@@ -1,10 +1,7 @@
 package dev.ajkneisl.home.printer.routines
 
-import dev.ajkneisl.home.printer.PrintHandler
-import dev.ajkneisl.home.printer.PrintHandler.feed
 import dev.ajkneisl.home.printer.WEB_CLI
 import dev.ajkneisl.home.printer.getDueToday
-import dev.ajkneisl.printer.obj.PrintLine
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -51,15 +48,15 @@ suspend fun goodMorning() {
 
     val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).format(LocalDate.now())
 
-    PrintHandler.print(
-        "Good Morning",
-        date,
-        qrCode = null,
-        PrintLine("Weather", 0, title = true),
-        weatherStatus feed 1,
-        PrintLine(dueTodayMessage, 0, title = true),
-        *dueToday.map { task -> task.content feed 0 }.toTypedArray(),
-        "" feed 1,
-        PrintLine("Have a good day.", 0, bold = true)
-    )
+//    PrintHandler.print(
+//        "Good Morning",
+//        date,
+//        qrCode = null,
+//        PrintLine("Weather", 0, title = true),
+//        weatherStatus feed 1,
+//        PrintLine(dueTodayMessage, 0, title = true),
+//        *dueToday.map { task -> task.content feed 0 }.toTypedArray(),
+//        "" feed 1,
+//        PrintLine("Have a good day.", 0, bold = true)
+//    )
 }
