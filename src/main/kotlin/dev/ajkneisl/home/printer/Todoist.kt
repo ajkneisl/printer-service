@@ -251,7 +251,6 @@ private fun formatTask(task: Task): Print {
         listOf(
             PrintImage("https://logodix.com/logo/1851750.png", Justification.CENTER, 1),
             PrintText(PrintDefaults.SUB_TITLE, 0, task.content),
-            PrintText(PrintDefaults.DEFAULT, 2, task.description),
             *lines.toTypedArray(),
             PrintQrCode(task.url, 7, Justification.CENTER, 1)
         )
