@@ -19,6 +19,6 @@ fun Application.module() {
     configureSerialization()
     configureTodoist()
     routineRouting()
-    configurePurchaseAlerts()
+    configureEmailAlerts()
     registerWebsocket()
 }
