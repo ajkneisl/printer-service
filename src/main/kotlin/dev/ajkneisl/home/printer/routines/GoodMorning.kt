@@ -1,32 +1,33 @@
 package dev.ajkneisl.home.printer.routines
 
+import dev.ajkneisl.home.printer.PrintHandler
 import dev.ajkneisl.home.printer.WEB_CLI
 import dev.ajkneisl.home.printer.getDueToday
-import io.ktor.client.*
+import dev.ajkneisl.printerlib.Justification
+import dev.ajkneisl.printerlib.PrintDefaults
+import dev.ajkneisl.printerlib.PrintOptions
+import dev.ajkneisl.printerlib.PrintText
 import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import org.json.JSONObject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlin.math.roundToInt
+import org.json.JSONObject
 
-val LOCATION: String by lazy {
-    System.getenv("LOCATION")
-}
+/** Location for the OpenWeatherMap */
+val LOCATION: String by lazy { System.getenv("LOCATION") }
 
-val WEATHER_API: String by lazy {
-    System.getenv("WEATHER_API")
-}
+/** The API for the OpenWeatherMap */
+val WEATHER_API: String by lazy { System.getenv("WEATHER_API") }
 
+/** Gives weather information and tasks due today. */
 suspend fun goodMorning() {
     val response: String =
         WEB_CLI.get(
-            "https://api.openweathermap.org/data/2.5/onecall$LOCATION&units=imperial&appid=${WEATHER_API}"
-        ).body()
+                "https://api.openweathermap.org/data/2.5/onecall$LOCATION&units=imperial&appid=${WEATHER_API}"
+            )
+            .body()
 
     val json = JSONObject(response)
     val current = json.getJSONObject("current")
@@ -48,15 +49,23 @@ suspend fun goodMorning() {
 
     val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).format(LocalDate.now())
 
-//    PrintHandler.print(
-//        "Good Morning",
-//        date,
-//        qrCode = null,
-//        PrintLine("Weather", 0, title = true),
-//        weatherStatus feed 1,
-//        PrintLine(dueTodayMessage, 0, title = true),
-//        *dueToday.map { task -> task.content feed 0 }.toTypedArray(),
-//        "" feed 1,
-//        PrintLine("Have a good day.", 0, bold = true)
-//    )
+    val subHeader =
+        PrintOptions(
+            false,
+            bold = false,
+            justification = Justification.CENTER,
+            fontSize = 2,
+            font = 0,
+            whiteOnBlack = false
+        )
+
+    PrintHandler.print(
+        PrintText(PrintDefaults.TITLE, 0, "Good Morning!"),
+        PrintText(PrintDefaults.SUB_TITLE, 0, date),
+        PrintText(subHeader, 0, "Weather"),
+        PrintText(PrintDefaults.DEFAULT, 1, weatherStatus),
+        PrintText(subHeader, 0, dueTodayMessage),
+        PrintText(PrintDefaults.DEFAULT, 1, *dueToday.map { task -> task.content }.toTypedArray()),
+        PrintText(PrintDefaults.SUB_TITLE, 0, "Have a good day.")
+    )
 }

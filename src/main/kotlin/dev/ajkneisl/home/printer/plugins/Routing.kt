@@ -1,8 +1,7 @@
-@file:OptIn(KtorExperimentalLocationsAPI::class)
-
 package dev.ajkneisl.home.printer.plugins
 
 import dev.ajkneisl.home.printer.error.ServerError
+import dev.ajkneisl.home.printer.getUptime
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.locations.*
@@ -12,6 +11,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
+/** Configures error pages and other default pages. */
 fun Application.configureRouting() {
     install(AutoHeadResponse)
     install(DoubleReceive)
@@ -23,13 +23,23 @@ fun Application.configureRouting() {
 
         exception { call: ApplicationCall, cause: Exception ->
             cause.printStackTrace()
-            call.respond(HttpStatusCode.InternalServerError, mapOf("response" to "There was an issue on our end."))
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                mapOf("response" to "There was an issue on our end.")
+            )
         }
     }
 
     routing {
         get("/") {
-            call.respond(HttpStatusCode.OK)
+            call.respond(
+                HttpStatusCode.OK,
+                mapOf(
+                    "server" to "ajkn.printer-service",
+                    "version" to "0.1.4",
+                    "uptime" to getUptime()
+                )
+            )
         }
     }
 }

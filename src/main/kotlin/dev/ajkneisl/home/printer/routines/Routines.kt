@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
+/** Routes all routines. */
 fun Application.routineRouting() {
     routing {
         route("/routines") {
@@ -33,8 +34,4 @@ fun Application.routineRouting() {
             }
         }
     }
-}
-
-fun route(s: String, function: () -> Unit) {
-
 }

@@ -8,6 +8,10 @@ import dev.ajkneisl.home.printer.routines.routineRouting
 import dev.ajkneisl.home.printer.service.registerWebsocket
 import io.ktor.server.application.*
 
+private val startTime = System.currentTimeMillis()
+
+fun getUptime() = System.currentTimeMillis() - startTime
+
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
 

@@ -1,7 +1,6 @@
 package dev.ajkneisl.home.printer
 
 import dev.ajkneisl.home.printer.error.AuthorizationError
-import dev.ajkneisl.home.printer.service.sendPrint
 import dev.ajkneisl.home.printer.service.sendPrints
 import dev.ajkneisl.printerlib.*
 import io.ktor.client.*
@@ -17,11 +16,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.util.*
-import kotlinx.coroutines.delay
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
-import javax.naming.ldap.Control
 
 /** a Todoist Task. Received through Todoist API. */
 @kotlinx.serialization.Serializable
@@ -104,7 +101,7 @@ fun Application.configureTodoist() {
                 put {
                     call.authorize()
                     printout()
-                    call.respondText(":)")
+                    call.respond(HttpStatusCode.OK)
                 }
             }
         }
@@ -122,11 +119,13 @@ suspend fun getDueToday(): List<Task> {
     val today = calendar.get(Calendar.DAY_OF_MONTH)
     val month = calendar.get(Calendar.MONTH)
 
-    return getTasks().filter { task -> !task.completed && task.due != null }.filter { task ->
-        val split = task.due?.date?.split("-")!!
+    return getTasks()
+        .filter { task -> !task.completed && task.due != null }
+        .filter { task ->
+            val split = task.due?.date?.split("-")!!
 
-        split[1].toIntOrNull() == month + 1 && split[2].toIntOrNull() == today
-    }
+            split[1].toIntOrNull() == month + 1 && split[2].toIntOrNull() == today
+        }
 }
 
 /** Find tasks that aren't completed and have a due date. */
@@ -163,9 +162,10 @@ suspend fun printout() {
 
     val overdue = getOverdue(tasks).sortedByDescending { task -> task.priority }
     val due =
-        tasks.toMutableList().apply { removeAll(overdue) }.sortedByDescending { task ->
-            task.priority
-        }
+        tasks
+            .toMutableList()
+            .apply { removeAll(overdue) }
+            .sortedByDescending { task -> task.priority }
 
     val lines = mutableListOf<PrintLine>()
     val title =
@@ -201,11 +201,10 @@ suspend fun printout() {
 
 /** Individually printout all tasks with a due date. */
 suspend fun printoutAll() {
-    val tasks = getTasks()
-        .filter { task -> !task.completed && task.due != null } // must have a due date
-        .map { task ->
-            formatTask(task)
-        }
+    val tasks =
+        getTasks()
+            .filter { task -> !task.completed && task.due != null } // must have a due date
+            .map { task -> formatTask(task) }
 
     sendPrints(tasks)
 }
@@ -259,8 +258,7 @@ private fun formatTask(task: Task): Print {
 
 /** Individually printout all tasks. */
 suspend fun overduePrintout() {
-    val tasks = getOverdue(getUncompletedTasks())
-        .map { task -> formatTask(task) }
+    val tasks = getOverdue(getUncompletedTasks()).map { task -> formatTask(task) }
 
     sendPrints(tasks)
 }

@@ -6,9 +6,9 @@ import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.cors.*
 import io.ktor.server.plugins.defaultheaders.*
 
+/** Configures CORS and default headers. */
 fun Application.configureHTTP() {
-    install(CachingHeaders) {
-    }
+    install(CachingHeaders) {}
 
     install(CORS) {
         allowMethod(HttpMethod.Options)
@@ -19,7 +19,5 @@ fun Application.configureHTTP() {
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
 
-    install(DefaultHeaders) {
-        header("X-Server", "AJKN Printer")
-    }
+    install(DefaultHeaders) { header("X-Server", "ajkn.printer-service") }
 }

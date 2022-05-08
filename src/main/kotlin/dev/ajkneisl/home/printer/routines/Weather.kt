@@ -1,20 +1,23 @@
 package dev.ajkneisl.home.printer.routines
 
+import dev.ajkneisl.home.printer.PrintHandler
 import dev.ajkneisl.home.printer.WEB_CLI
+import dev.ajkneisl.printerlib.PrintDefaults
+import dev.ajkneisl.printerlib.PrintText
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import org.json.JSONObject
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
+import org.json.JSONObject
 
+/** Prints information about the current weather. */
 suspend fun weatherRoutine() {
     val response: String =
-        WEB_CLI
-            .get(
+        WEB_CLI.get(
                 "https://api.openweathermap.org/data/2.5/onecall$LOCATION&units=imperial&appid=${WEATHER_API}"
             )
             .body()
@@ -38,16 +41,19 @@ suspend fun weatherRoutine() {
             TimeZone.getDefault().toZoneId()
         )
 
-//    PrintHandler.print(
-//        "Weather",
-//        date,
-//        qrCode = null,
-//        "Sunrise: ${formatter.format(sunrise)}" feed 0,
-//        "Sunset: ${formatter.format(sunset)}" feed 1,
-//        "Current Temperature: ${current.getInt("temp")}F" feed 0,
-//        "Feels Like: ${current.getInt("feels_like")}F" feed 0,
-//        "High: ${daily.getJSONObject("temp").getInt("max")}F" feed 0,
-//        "Low: ${daily.getJSONObject("temp").getInt("min")}F" feed 1,
-//        "Weather: ${weather.getJSONObject(0).getString("description")}" feed 0
-//    )
+    PrintHandler.print(
+        PrintText(PrintDefaults.TITLE, 0, "Weather"),
+        PrintText(PrintDefaults.SUB_TITLE, 0, date),
+        PrintText(
+            PrintDefaults.DEFAULT,
+            0,
+            "Sunrise: ${formatter.format(sunrise)}",
+            "Sunset: ${formatter.format(sunset)}",
+            "Current Temperature: ${current.getInt("temp")}F",
+            "Feels Like: ${current.getInt("feels_like")}F",
+            "High: ${daily.getJSONObject("temp").getInt("max")}F",
+            "Low: ${daily.getJSONObject("temp").getInt("min")}F",
+            "Weather: ${weather.getJSONObject(0).getString("description")}"
+        )
+    )
 }

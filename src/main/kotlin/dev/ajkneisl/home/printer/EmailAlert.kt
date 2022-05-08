@@ -2,11 +2,17 @@ package dev.ajkneisl.home.printer
 
 import dev.ajkneisl.printerlib.PrintDefaults
 import dev.ajkneisl.printerlib.PrintText
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.json.JSONObject
 
+/**
+ * Parses through the attachments in an email with understanding of malformed JSON or missing
+ * attachments altogether.
+ */
 private fun parseAttachmentsSafely(rawData: String): List<JSONObject> {
     val data =
         try {
@@ -27,6 +33,7 @@ private fun parseAttachmentsSafely(rawData: String): List<JSONObject> {
     return attachments.toList()
 }
 
+/** Responds to `POST /email` when PostGrid sends a webhook request. */
 fun Application.configureEmailAlerts() {
     routing {
         post("/email") {
@@ -46,6 +53,8 @@ fun Application.configureEmailAlerts() {
                         .toTypedArray()
                 )
             )
+
+            call.respond(HttpStatusCode.OK)
         }
     }
 }
