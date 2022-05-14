@@ -1,7 +1,6 @@
 package dev.ajkneisl.home.printer
 
 import dev.ajkneisl.home.printer.error.AuthorizationError
-import dev.ajkneisl.home.printer.service.sendPrints
 import dev.ajkneisl.printerlib.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -66,43 +65,41 @@ private val TODOIST_WEB_CLI =
     }
 
 /** Configure Todoist routing. */
-fun Application.configureTodoist() {
-    routing {
-        route("/todoist") {
-            post {
-                val headers = call.request.headers
+fun Routing.todoistRouting() {
+    route("/todoist") {
+        post {
+            val headers = call.request.headers
 
-                if (!headers.contains("X-Todoist-Hmac-SHA256")) throw AuthorizationError()
+            if (!headers.contains("X-Todoist-Hmac-SHA256")) throw AuthorizationError()
 
-                val body = JSONObject(call.receiveText())
-                val eventData = body.getJSONObject("event_data")
+            val body = JSONObject(call.receiveText())
+            val eventData = body.getJSONObject("event_data")
 
-                PrintHandler.print(
-                    PrintText(PrintDefaults.TITLE, 0, "Todoist"),
-                    PrintText(PrintDefaults.DEFAULT, 0, body.getString("event_name"))
-                )
+            PrintHandler.print(
+                PrintText(PrintDefaults.TITLE, 0, "Todoist"),
+                PrintText(PrintDefaults.DEFAULT, 0, body.getString("event_name"))
+            )
 
-                call.respond(mapOf("response" to "OK"))
+            call.respond(mapOf("response" to "OK"))
+        }
+
+        route("/printout") {
+            put("/all") {
+                call.authorize()
+                printoutAll()
+                call.respond(HttpStatusCode.OK)
             }
 
-            route("/printout") {
-                put("/all") {
-                    call.authorize()
-                    printoutAll()
-                    call.respond(HttpStatusCode.OK)
-                }
+            put("/overdue") {
+                call.authorize()
+                overduePrintout()
+                call.respond(HttpStatusCode.OK)
+            }
 
-                put("/overdue") {
-                    call.authorize()
-                    overduePrintout()
-                    call.respond(HttpStatusCode.OK)
-                }
-
-                put {
-                    call.authorize()
-                    printout()
-                    call.respond(HttpStatusCode.OK)
-                }
+            put {
+                call.authorize()
+                printout()
+                call.respond(HttpStatusCode.OK)
             }
         }
     }
@@ -206,7 +203,7 @@ suspend fun printoutAll() {
             .filter { task -> !task.completed && task.due != null } // must have a due date
             .map { task -> formatTask(task) }
 
-    sendPrints(tasks)
+    PrintHandler.batchPrint(tasks)
 }
 
 /** Print out [task]. */
@@ -260,5 +257,5 @@ private fun formatTask(task: Task): Print {
 suspend fun overduePrintout() {
     val tasks = getOverdue(getUncompletedTasks()).map { task -> formatTask(task) }
 
-    sendPrints(tasks)
+    PrintHandler.batchPrint(tasks)
 }

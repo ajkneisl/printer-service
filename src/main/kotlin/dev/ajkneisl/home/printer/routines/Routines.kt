@@ -7,31 +7,29 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 /** Routes all routines. */
-fun Application.routineRouting() {
-    routing {
-        route("/routines") {
-            put("/morning") {
-                call.authorize()
-                goodMorning()
-                call.respond(HttpStatusCode.OK)
-            }
+fun Routing.routineRouting() {
+    route("/routines") {
+        put("/morning") {
+            call.authorize()
+            goodMorning()
+            call.respond(HttpStatusCode.OK)
+        }
 
-            put("/weather") {
-                call.authorize()
-                weatherRoutine()
-                call.respond(HttpStatusCode.OK)
-            }
+        put("/weather") {
+            call.authorize()
+            weatherRoutine()
+            call.respond(HttpStatusCode.OK)
+        }
 
-            put("/away") {
-                call.authorize()
-                call.respond(HttpStatusCode.OK)
-            }
+        put("/away") {
+            call.authorize()
+            call.respond(HttpStatusCode.OK)
+        }
 
-            put("/home") {
-                call.authorize()
-                homeRoutine()
-                call.respond(HttpStatusCode.OK)
-            }
+        put("/home") {
+            call.authorize()
+            homeRoutine()
+            call.respond(HttpStatusCode.OK)
         }
     }
 }

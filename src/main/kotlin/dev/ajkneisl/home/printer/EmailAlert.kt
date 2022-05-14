@@ -34,27 +34,25 @@ private fun parseAttachmentsSafely(rawData: String): List<JSONObject> {
 }
 
 /** Responds to `POST /email` when PostGrid sends a webhook request. */
-fun Application.configureEmailAlerts() {
-    routing {
-        post("/email") {
-            val params = call.receiveParameters()
+fun Routing.emailRouting() {
+    post("/email") {
+        val params = call.receiveParameters()
 
-            PrintHandler.print(
-                PrintText(PrintDefaults.TITLE, 0, params["subject"] ?: "No subject."),
-                PrintText(PrintDefaults.SUB_TITLE, 0, params["from"] ?: "No sender."),
-                PrintText(PrintDefaults.DEFAULT, 2, params["text"] ?: ""),
-                PrintText(PrintDefaults.DEFAULT, 0, params["to"] ?: "Unknown receiver."),
-                PrintText(
-                    PrintDefaults.DEFAULT,
-                    0,
-                    "Attached:",
-                    *parseAttachmentsSafely(params["attachment-info"] ?: "{}")
-                        .map { json -> json.getString("filename") }
-                        .toTypedArray()
-                )
+        PrintHandler.print(
+            PrintText(PrintDefaults.TITLE, 0, params["subject"] ?: "No subject."),
+            PrintText(PrintDefaults.SUB_TITLE, 0, params["from"] ?: "No sender."),
+            PrintText(PrintDefaults.DEFAULT, 2, params["text"] ?: ""),
+            PrintText(PrintDefaults.DEFAULT, 0, params["to"] ?: "Unknown receiver."),
+            PrintText(
+                PrintDefaults.DEFAULT,
+                0,
+                "Attached:",
+                *parseAttachmentsSafely(params["attachment-info"] ?: "{}")
+                    .map { json -> json.getString("filename") }
+                    .toTypedArray()
             )
+        )
 
-            call.respond(HttpStatusCode.OK)
-        }
+        call.respond(HttpStatusCode.OK)
     }
 }
