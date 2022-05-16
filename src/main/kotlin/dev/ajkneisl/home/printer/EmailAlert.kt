@@ -34,7 +34,7 @@ private fun parseAttachmentsSafely(rawData: String): List<JSONObject> {
 }
 
 /** Responds to `POST /email` when PostGrid sends a webhook request. */
-fun Routing.emailRouting() {
+fun Route.emailRouting() {
     post("/email") {
         val params = call.receiveParameters()
 

@@ -65,7 +65,7 @@ private val TODOIST_WEB_CLI =
     }
 
 /** Configure Todoist routing. */
-fun Routing.todoistRouting() {
+fun Route.todoistRouting() {
     route("/todoist") {
         post {
             val headers = call.request.headers

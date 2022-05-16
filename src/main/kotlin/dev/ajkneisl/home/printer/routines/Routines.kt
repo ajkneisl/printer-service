@@ -7,7 +7,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 /** Routes all routines. */
-fun Routing.routineRouting() {
+fun Route.routineRouting() {
     route("/routines") {
         put("/morning") {
             call.authorize()
