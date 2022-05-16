@@ -80,19 +80,32 @@ fun Application.module() {
     }
 
     routing {
-        routineRouting()
-        emailRouting()
-        todoistRouting()
+        route("/printer") {
+            routineRouting()
+            emailRouting()
+            todoistRouting()
 
-        get("/") {
-            call.respond(
-                HttpStatusCode.OK,
-                mapOf(
-                    "server" to "ajkn.printer-service",
-                    "version" to "0.1.4",
-                    "uptime" to "${getUptime()}"
+            get("/") {
+                call.respond(
+                    HttpStatusCode.OK,
+                    mapOf(
+                        "server" to "ajkn.printer-service",
+                        "version" to "0.1.4",
+                        "uptime" to "${getUptime()}"
+                    )
                 )
-            )
+            }
+            
+            get("/health") {
+                call.respond(
+                    HttpStatusCode.OK,
+                    mapOf(
+                        "server" to "ajkn.printer-service",
+                        "version" to "0.1.4",
+                        "uptime" to "${getUptime()}"
+                    )
+                )
+            }
         }
     }
 }
