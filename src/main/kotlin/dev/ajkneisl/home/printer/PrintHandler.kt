@@ -16,7 +16,7 @@ object PrintHandler {
     fun print(vararg lines: PrintLine) {
         MONGO_CLIENT
             .getDatabase("printer")
-            .getCollection<PrinterData>()
+            .getCollection<PrinterData>("queue")
             .insertOne(
                 PrintRequest(
                     Print(UUID.randomUUID().toString(), System.currentTimeMillis(), listOf(*lines))
@@ -28,7 +28,7 @@ object PrintHandler {
     fun batchPrint(prints: List<Print>) {
         MONGO_CLIENT
             .getDatabase("printer")
-            .getCollection<PrinterData>()
+            .getCollection<PrinterData>("queue")
             .insertOne(LargePrintRequest(prints))
     }
 }

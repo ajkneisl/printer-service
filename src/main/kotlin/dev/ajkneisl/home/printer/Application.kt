@@ -50,7 +50,7 @@ fun Application.module() {
             call.respond(HttpStatusCode.BadRequest, mapOf("response" to cause.message))
         }
 
-        exception { call: ApplicationCall, cause: Exception ->
+        exception { call: ApplicationCall, cause: Throwable ->
             cause.printStackTrace()
 
             call.respond(
@@ -87,7 +87,7 @@ fun Application.module() {
             emailRouting()
             todoistRouting()
 
-            get("/") {
+            get {
                 call.respond(
                     HttpStatusCode.OK,
                     mapOf(
