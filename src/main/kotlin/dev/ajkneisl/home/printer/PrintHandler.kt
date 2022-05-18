@@ -9,7 +9,7 @@ import org.litote.kmongo.getCollection
 object PrintHandler {
     private val MONGO_CLIENT =
         KMongo.createClient(
-            "mongodb+srv://printerController:${System.getenv("MONGO_PW")}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+            "mongodb+srv://printerController:${System.getenv("API_KEY_MONGO")}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
         )
 
     /** Print [lines] */

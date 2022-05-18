@@ -59,7 +59,7 @@ data class Due(
 /** Automatically authorized for Todoist. */
 private val TODOIST_WEB_CLI =
     HttpClient(CIO) {
-        defaultRequest { header("Authorization", "Bearer ${System.getenv("TODOIST")}") }
+        defaultRequest { header("Authorization", "Bearer ${System.getenv("API_KEY_TODOIST")}") }
 
         install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
     }

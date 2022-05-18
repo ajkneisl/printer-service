@@ -16,10 +16,10 @@ import kotlin.math.roundToInt
 import org.json.JSONObject
 
 /** Location for the OpenWeatherMap */
-val LOCATION: String by lazy { System.getenv("LOCATION") }
+val LOCATION: String by lazy { System.getenv("WEATHER_API_LOCATION") }
 
 /** The API for the OpenWeatherMap */
-val WEATHER_API: String by lazy { System.getenv("WEATHER_API") }
+val WEATHER_API: String by lazy { System.getenv("API_KEY_WEATHER") }
 
 /** Gives weather information and tasks due today. */
 suspend fun goodMorning() {

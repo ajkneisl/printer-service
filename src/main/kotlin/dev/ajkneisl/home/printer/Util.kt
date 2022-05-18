@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 
 /** The required token make requests. */
-private val AUTH_TOKEN by lazy { System.getenv("AUTH_TOKEN") }
+private val AUTH_TOKEN by lazy { System.getenv("AUTH_TOKEN_DEF") }
 
 /** Authorizes a request. */
 fun ApplicationCall.authorize() {
