@@ -22,8 +22,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.slf4j.LoggerFactory
 
+/** The start time of the service. */
 private val startTime = System.currentTimeMillis()
 
+/** Calculate how long the service has been running in MS */
 fun getUptime() = System.currentTimeMillis() - startTime
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -95,7 +97,7 @@ fun Application.module() {
                     )
                 )
             }
-            
+
             get("/health") {
                 call.respond(
                     HttpStatusCode.OK,
