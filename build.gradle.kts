@@ -37,12 +37,9 @@ dependencies {
     implementation("io.ktor:ktor-server-locations-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-status-pages-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-caching-headers-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-cors-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-default-headers-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-call-id-jvm:$ktor_version")
-    implementation("io.ktor:ktor-server-metrics-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
@@ -52,9 +49,11 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
-    implementation("org.litote.kmongo:kmongo:4.5.1")
     implementation("org.json:json:20220320")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+
+    implementation("org.litote.kmongo:kmongo:4.6.0")
+    implementation("org.litote.kmongo:kmongo-serialization-mapping:4.6.0")
 
     implementation(files(("lib/printerlib-1.0.jar")))
 }

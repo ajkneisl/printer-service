@@ -9,8 +9,6 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.autohead.*
-import io.ktor.server.plugins.cachingheaders.*
-import io.ktor.server.plugins.callid.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.*
@@ -39,13 +37,11 @@ fun Application.module() {
     val rootLogger: Logger = loggerContext.getLogger("org.mongodb.driver")
     rootLogger.level = Level.OFF
 
-    install(AutoHeadResponse)
-    install(DoubleReceive)
-    install(CachingHeaders) {}
-    install(DefaultHeaders) { header("X-Server", "ajkn.printer-service") }
-    install(ContentNegotiation) { json() }
-
     install(StatusPages) {
+        status(HttpStatusCode.NotFound) { call, code ->
+            call.respond(code, mapOf("response" to "That endpoint could not be found."))
+        }
+
         exception<ServerError>() { call, cause ->
             call.respond(HttpStatusCode.BadRequest, mapOf("response" to cause.message))
         }
@@ -60,11 +56,17 @@ fun Application.module() {
         }
     }
 
-    install(CORS) {
+    install(AutoHeadResponse)
+    install(DoubleReceive)
+    install(DefaultHeaders) { header("X-Server", "ajkn.printer-service") }
+    install(ContentNegotiation) { json() }
+
+    install(io.ktor.server.plugins.cors.routing.CORS) {
         allowMethod(HttpMethod.Options)
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
+        allowMethod(HttpMethod.Post)
 
         allowHeader(HttpHeaders.Authorization)
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
@@ -73,12 +75,6 @@ fun Application.module() {
     install(CallLogging) {
         level = org.slf4j.event.Level.INFO
         filter { call -> call.request.path().startsWith("/") }
-        callIdMdc("call-id")
-    }
-
-    install(CallId) {
-        header(HttpHeaders.XRequestId)
-        verify { callId: String -> callId.isNotEmpty() }
     }
 
     routing {

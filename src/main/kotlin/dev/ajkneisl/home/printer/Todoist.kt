@@ -84,6 +84,12 @@ fun Route.todoistRouting() {
         }
 
         route("/printout") {
+            put {
+                call.authorize()
+                printout()
+                call.respond(HttpStatusCode.OK)
+            }
+
             put("/all") {
                 call.authorize()
                 printoutAll()
@@ -93,12 +99,6 @@ fun Route.todoistRouting() {
             put("/overdue") {
                 call.authorize()
                 overduePrintout()
-                call.respond(HttpStatusCode.OK)
-            }
-
-            put {
-                call.authorize()
-                printout()
                 call.respond(HttpStatusCode.OK)
             }
         }
