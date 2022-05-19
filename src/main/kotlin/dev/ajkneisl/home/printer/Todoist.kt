@@ -2,6 +2,7 @@ package dev.ajkneisl.home.printer
 
 import dev.ajkneisl.home.printer.error.AuthorizationError
 import dev.ajkneisl.printerlib.*
+import dev.ajkneisl.home.printer.getSecret
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -59,7 +60,7 @@ data class Due(
 /** Automatically authorized for Todoist. */
 private val TODOIST_WEB_CLI =
     HttpClient(CIO) {
-        defaultRequest { header("Authorization", "Bearer ${System.getenv("API_KEY_TODOIST")}") }
+        defaultRequest { header("Authorization", "Bearer ${getSecret("API_KEY_TODOIST")}") }
 
         install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
     }

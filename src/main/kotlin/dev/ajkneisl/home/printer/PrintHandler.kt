@@ -1,6 +1,7 @@
 package dev.ajkneisl.home.printer
 
 import dev.ajkneisl.printerlib.*
+import dev.ajkneisl.home.printer.getSecret
 import kotlinx.serialization.encodeToString
 import java.util.*
 import kotlinx.serialization.json.Json
@@ -19,7 +20,7 @@ object PrintHandler {
 
     private val MONGO_CLIENT =
         KMongo.createClient(
-            "mongodb+srv://printerController:${System.getenv("API_KEY_MONGO")}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+            "mongodb+srv://printerController:${getSecret("API_KEY_MONGO")})}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
         )
 
     /** Print [lines] */

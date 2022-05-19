@@ -3,6 +3,7 @@ package dev.ajkneisl.home.printer.routines
 import dev.ajkneisl.home.printer.PrintHandler
 import dev.ajkneisl.home.printer.WEB_CLI
 import dev.ajkneisl.home.printer.getDueToday
+import dev.ajkneisl.home.printer.getSecret
 import dev.ajkneisl.printerlib.Justification
 import dev.ajkneisl.printerlib.PrintDefaults
 import dev.ajkneisl.printerlib.PrintOptions
@@ -16,10 +17,10 @@ import kotlin.math.roundToInt
 import org.json.JSONObject
 
 /** Location for the OpenWeatherMap */
-val LOCATION: String by lazy { System.getenv("WEATHER_API_LOCATION") }
+val LOCATION: String by lazy { getSecret("WEATHER_API_LOCATION") }
 
 /** The API for the OpenWeatherMap */
-val WEATHER_API: String by lazy { System.getenv("API_KEY_WEATHER") }
+val WEATHER_API: String by lazy { getSecret("API_KEY_WEATHER") }
 
 /** Gives weather information and tasks due today. */
 suspend fun goodMorning() {
