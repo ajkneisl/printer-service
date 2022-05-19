@@ -38,6 +38,7 @@ fun Application.module() {
     rootLogger.level = Level.OFF
     
     println("Using authorization key: ${System.getenv("AUTH_TOKEN_DEF")}")
+    println(System.getenv())
 
     install(StatusPages) {
         status(HttpStatusCode.NotFound) { call, code ->
