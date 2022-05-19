@@ -13,7 +13,7 @@ private val secretStore: JSONObject by lazy {
 
 /** Get a secret by it's key */
 fun getSecret(key: String): String {
-    return secretStore.get(key) ?: ""
+    return secretStore.getString(key) ?: ""
 }
 
 /** The required token make requests. */
