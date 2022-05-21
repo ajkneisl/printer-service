@@ -1,10 +1,7 @@
 package dev.ajkneisl.home.printer
 
 import dev.ajkneisl.printerlib.*
-import dev.ajkneisl.home.printer.getSecret
-import kotlinx.serialization.encodeToString
 import java.util.*
-import kotlinx.serialization.json.Json
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.serialization.SerializationClassMappingTypeService
@@ -18,10 +15,12 @@ object PrintHandler {
         )
     }
 
-    private val MONGO_CLIENT =
-        KMongo.createClient(
-            "mongodb+srv://printerController:${getSecret("API_KEY_MONGO")})}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
-        )
+    private val MONGO_CLIENT by lazy {
+        val str =
+            "mongodb+srv://printerController:${getSecret("API_KEY_MONGO")}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+
+        KMongo.createClient(str)
+    }
 
     /** Print [lines] */
     fun print(vararg lines: PrintLine) {

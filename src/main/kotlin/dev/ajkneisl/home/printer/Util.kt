@@ -5,11 +5,10 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import org.json.JSONObject;
+import org.json.JSONObject
 
-private val secretStore: JSONObject by lazy {
-    JSONObject(System.getenv("SECRETS"))
-}
+/** The store of secrets. */
+private val secretStore: JSONObject by lazy { JSONObject(System.getenv("SECRETS")) }
 
 /** Get a secret by it's key */
 fun getSecret(key: String): String {
