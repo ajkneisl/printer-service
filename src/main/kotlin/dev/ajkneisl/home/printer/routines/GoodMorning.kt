@@ -2,8 +2,8 @@ package dev.ajkneisl.home.printer.routines
 
 import dev.ajkneisl.home.printer.PrintHandler
 import dev.ajkneisl.home.printer.WEB_CLI
-import dev.ajkneisl.home.printer.getDueToday
 import dev.ajkneisl.home.printer.getSecret
+import dev.ajkneisl.home.printer.todoist.Todoist
 import dev.ajkneisl.printerlib.Justification
 import dev.ajkneisl.printerlib.PrintDefaults
 import dev.ajkneisl.printerlib.PrintOptions
@@ -39,13 +39,13 @@ suspend fun goodMorning() {
             "${weather.getJSONObject(0).getString("description").capitalize()}, ${current.getDouble("temp").roundToInt()}F"
         else "No weather info."
 
-    val dueToday = getDueToday().sortedByDescending { task -> task.priority }
+    val dueToday = Todoist.getDueToday().sortedByDescending { task -> task.priority }
 
     val dueTodayMessage =
         if (dueToday.isEmpty()) {
             "No tasks due."
         } else {
-            "${getDueToday().size} task(s) due today."
+            "${Todoist.getDueToday().size} task(s) due today."
         }
 
     val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).format(LocalDate.now())

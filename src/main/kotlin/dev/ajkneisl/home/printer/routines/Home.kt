@@ -1,6 +1,7 @@
 package dev.ajkneisl.home.printer.routines
 
 import dev.ajkneisl.home.printer.*
+import dev.ajkneisl.home.printer.todoist.Todoist
 import dev.ajkneisl.printerlib.Justification
 import dev.ajkneisl.printerlib.PrintDefaults
 import dev.ajkneisl.printerlib.PrintOptions
@@ -13,8 +14,8 @@ import java.time.format.FormatStyle
 suspend fun homeRoutine() {
     val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).format(LocalDate.now())
 
-    val dueToday = getDueToday()
-    val overdue = getOverdue(getTasks()).filterNot(dueToday::contains)
+    val dueToday = Todoist.getDueToday()
+    val overdue = Todoist.getOverdue(Todoist.getTasks()).filterNot(dueToday::contains)
     val totalDue = dueToday.size + overdue.size
     val dueTodayMessage =
         if (totalDue == 0) "You have nothing due today!"

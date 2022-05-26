@@ -46,7 +46,6 @@ dependencies {
 
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("org.apache.logging.log4j:log4j-core:2.17.2")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
 
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     implementation("org.json:json:20220320")
