@@ -1,9 +1,16 @@
 package dev.ajkneisl.home.printer.todoist
 
+import dev.ajkneisl.home.printer.AUTH_TOKEN
 import dev.ajkneisl.home.printer.PrintHandler
 import dev.ajkneisl.home.printer.authorize
 import dev.ajkneisl.home.printer.error.AuthorizationError
+import dev.ajkneisl.home.printer.error.ServerError
 import dev.ajkneisl.home.printer.getSecret
+import dev.ajkneisl.home.printer.todoist.Webhook.handleItemAdded
+import dev.ajkneisl.home.printer.todoist.Webhook.handleItemComplete
+import dev.ajkneisl.home.printer.todoist.Webhook.handleItemModified
+import dev.ajkneisl.home.printer.todoist.Webhook.handleReminderFired
+import dev.ajkneisl.home.printer.todoist.obj.Project
 import dev.ajkneisl.home.printer.todoist.obj.Task
 import dev.ajkneisl.printerlib.*
 import io.ktor.client.*
@@ -35,17 +42,22 @@ object Todoist {
     fun Route.todoistRouting() {
         route("/todoist") {
             post {
-                val headers = call.request.headers
+                val auth = call.request.queryParameters["auth"]
 
-                if (!headers.contains("X-Todoist-Hmac-SHA256")) throw AuthorizationError()
+                if (auth != AUTH_TOKEN) throw AuthorizationError()
 
                 val body = JSONObject(call.receiveText())
                 val eventData = body.getJSONObject("event_data")
 
-                PrintHandler.print(
-                    PrintText(PrintDefaults.TITLE, 0, "Todoist"),
-                    PrintText(PrintDefaults.DEFAULT, 0, body.getString("event_name"))
-                )
+                val print = when (body.getString("event_name")) {
+                    "item:added" -> eventData.handleItemAdded()
+                    "item:updated" -> eventData.handleItemModified()
+                    "item:completed" -> eventData.handleItemComplete()
+                    "reminder:fired" -> eventData.handleReminderFired()
+                    else -> throw ServerError("Invalid Event Name")
+                }
+
+                PrintHandler.print(*print.toTypedArray())
 
                 call.respond(mapOf("response" to "OK"))
             }
@@ -70,6 +82,16 @@ object Todoist {
                 }
             }
         }
+    }
+
+    /** Get a project by it's ID. */
+    suspend fun getProject(id: Long): Project {
+        return TODOIST_WEB_CLI.get("https://api.todoist.com/rest/v1/projects/$id").body()
+    }
+
+    /** Get a task by it's ID. */
+    suspend fun getTask(id: Long): Task {
+        return TODOIST_WEB_CLI.get("https://api.todoist.com/rest/v1/tasks/$id").body()
     }
 
     /** Get all tasks from Todoist API. */

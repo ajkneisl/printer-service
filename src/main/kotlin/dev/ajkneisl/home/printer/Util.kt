@@ -16,7 +16,7 @@ fun getSecret(key: String): String {
 }
 
 /** The required token make requests. */
-private val AUTH_TOKEN by lazy { getSecret("AUTH_TOKEN_DEF") }
+val AUTH_TOKEN by lazy { getSecret("AUTH_TOKEN_DEF") }
 
 /** Authorizes a request. */
 fun ApplicationCall.authorize() {
