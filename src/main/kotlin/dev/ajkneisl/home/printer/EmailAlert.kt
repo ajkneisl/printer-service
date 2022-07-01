@@ -41,7 +41,8 @@ fun Route.emailRouting() {
         PrintHandler.print(
             PrintText(PrintDefaults.TITLE, 0, params["subject"] ?: "No subject."),
             PrintText(PrintDefaults.SUB_TITLE, 0, params["from"] ?: "No sender."),
-            PrintText(PrintDefaults.DEFAULT, 2, params["text"] ?: ""),
+            PrintText(PrintDefaults.DEFAULT, 2, "Text Body:", params["text"] ?: ""),
+            PrintText(PrintDefaults.DEFAULT, 2, "Html Body:", params["html"] ?: ""),
             PrintText(PrintDefaults.DEFAULT, 0, params["to"] ?: "Unknown receiver."),
             PrintText(
                 PrintDefaults.DEFAULT,
