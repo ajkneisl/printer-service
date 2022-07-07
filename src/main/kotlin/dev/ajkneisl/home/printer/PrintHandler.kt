@@ -30,7 +30,7 @@ object PrintHandler {
 
         /** Get the MongoDB connection string. */
         private fun getConnectionString() =
-            "mongodb+srv://printerController:${getSecret("API_KEY_MONGO")}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+            "mongodb+srv://printServer:${getSecret("API_KEY_MONGO")}@ajknpr.hscnn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
         /** Instantiate a new MongoDB client. Applies [Listener]. */
         private fun createClient() {
