@@ -54,6 +54,8 @@ dependencies {
     implementation("org.litote.kmongo:kmongo:4.6.0")
     implementation("org.litote.kmongo:kmongo-serialization-mapping:4.6.0")
 
+    implementation("org.jsoup:jsoup:1.14.3")
+
     implementation(files(("lib/printerlib-1.0.jar")))
 }
 
