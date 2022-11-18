@@ -1,4 +1,4 @@
-package dev.ajkneisl.home.printer
+package dev.ajkneisl.home
 
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*

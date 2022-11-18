@@ -1,17 +1,17 @@
-package dev.ajkneisl.home.printer.todoist
+package dev.ajkneisl.home.handle.todoist
 
-import dev.ajkneisl.home.printer.AUTH_TOKEN
-import dev.ajkneisl.home.printer.PrintHandler
-import dev.ajkneisl.home.printer.authorize
-import dev.ajkneisl.home.printer.error.AuthorizationError
-import dev.ajkneisl.home.printer.error.ServerError
-import dev.ajkneisl.home.printer.getSecret
-import dev.ajkneisl.home.printer.todoist.Webhook.handleItemAdded
-import dev.ajkneisl.home.printer.todoist.Webhook.handleItemComplete
-import dev.ajkneisl.home.printer.todoist.Webhook.handleItemModified
-import dev.ajkneisl.home.printer.todoist.Webhook.handleReminderFired
-import dev.ajkneisl.home.printer.todoist.obj.Project
-import dev.ajkneisl.home.printer.todoist.obj.Task
+import dev.ajkneisl.home.AUTH_TOKEN
+import dev.ajkneisl.home.PrintHandler
+import dev.ajkneisl.home.authorize
+import dev.ajkneisl.home.error.AuthorizationError
+import dev.ajkneisl.home.error.ServerError
+import dev.ajkneisl.home.getSecret
+import dev.ajkneisl.home.handle.todoist.Webhook.handleItemAdded
+import dev.ajkneisl.home.handle.todoist.Webhook.handleItemComplete
+import dev.ajkneisl.home.handle.todoist.Webhook.handleItemModified
+import dev.ajkneisl.home.handle.todoist.Webhook.handleReminderFired
+import dev.ajkneisl.home.handle.todoist.obj.Project
+import dev.ajkneisl.home.handle.todoist.obj.Task
 import dev.ajkneisl.printerlib.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -29,6 +29,9 @@ import java.util.*
 import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
+/**
+ * Manage connections with Todoist.
+ */
 object Todoist {
     /** Automatically authorized for Todoist. */
     private val TODOIST_WEB_CLI =
@@ -121,7 +124,7 @@ object Todoist {
 
     /** Find overdue tasks from [tasks]. */
     fun getOverdue(tasks: List<Task>): List<Task> {
-        return tasks.filter(::isOverdue)
+        return tasks.filter(Todoist::isOverdue)
     }
 
     /** Check if [task] is overdue. */

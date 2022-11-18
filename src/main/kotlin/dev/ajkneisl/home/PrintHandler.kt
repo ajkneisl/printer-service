@@ -1,4 +1,4 @@
-package dev.ajkneisl.home.printer
+package dev.ajkneisl.home
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
@@ -58,7 +58,7 @@ object PrintHandler {
     }
 
     /** Print [req] */
-    private fun print(req: PrinterData) {
+    fun print(req: PrinterData) {
         if (!System.getenv().getOrDefault("TEST_MODE", "false").toBoolean())
             Mongo.client.getDatabase("printer").getCollection<PrinterData>("queue").insertOne(req)
     }

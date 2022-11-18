@@ -1,4 +1,4 @@
-package dev.ajkneisl.home.printer.error
+package dev.ajkneisl.home.error
 
 import io.ktor.http.*
 

@@ -1,9 +1,9 @@
-package dev.ajkneisl.home.printer.routines
+package dev.ajkneisl.home.routines
 
-import dev.ajkneisl.home.printer.PrintHandler
-import dev.ajkneisl.home.printer.WEB_CLI
-import dev.ajkneisl.home.printer.getSecret
-import dev.ajkneisl.home.printer.todoist.Todoist
+import dev.ajkneisl.home.PrintHandler
+import dev.ajkneisl.home.WEB_CLI
+import dev.ajkneisl.home.getSecret
+import dev.ajkneisl.home.handle.todoist.Todoist
 import dev.ajkneisl.printerlib.Justification
 import dev.ajkneisl.printerlib.PrintDefaults
 import dev.ajkneisl.printerlib.PrintOptions

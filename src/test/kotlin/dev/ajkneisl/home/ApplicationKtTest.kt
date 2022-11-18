@@ -1,4 +1,4 @@
-package dev.ajkneisl.home.printer
+package dev.ajkneisl.home
 
 import dev.ajkneisl.printerlib.*
 import io.ktor.client.call.*

@@ -1,4 +1,4 @@
-package dev.ajkneisl.home.printer.todoist
+package dev.ajkneisl.home.todoist
 
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*

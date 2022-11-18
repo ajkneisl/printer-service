@@ -1,3 +1,5 @@
+import groovy.xml.dom.DOMCategory.attributes
+
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -10,7 +12,9 @@ plugins {
 }
 
 group = "dev.ajkneisl"
+
 version = "0.1.4"
+
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
 
@@ -21,14 +25,26 @@ application {
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
+
+    maven {
+        url = uri("https://maven.pkg.github.com/ajkneisl/printer-lib")
+
+        credentials {
+            username = "ajkneisl"
+            password = System.getenv("GHP_GITHUB")
+        }
+    }
 }
 
 dependencies {
+    implementation("org.reflections:reflections:0.10.2")
+
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("io.ktor:ktor-client-auth:$ktor_version")
     implementation("io.ktor:ktor-client-serialization:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("com.twilio.sdk:twilio:9.1.1")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
 
     implementation("io.ktor:ktor-server-auto-head-response-jvm:$ktor_version")
@@ -52,17 +68,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
     implementation("org.litote.kmongo:kmongo:4.6.0")
-    implementation("org.litote.kmongo:kmongo-serialization-mapping:4.6.0")
+    implementation("org.litote.kmongo:kmongo-serialization-mapping:4.7.0")
 
     implementation("org.jsoup:jsoup:1.14.3")
 
-    implementation(files(("lib/printerlib-1.0.jar")))
-}
-
-tasks {
-    shadowJar {
-        manifest {
-            attributes(Pair("Main-Class", "io.ktor.server.netty.EngineMain"))
-        }
-    }
+    implementation("dev.ajkneisl:printerlib:1.2.1")
 }

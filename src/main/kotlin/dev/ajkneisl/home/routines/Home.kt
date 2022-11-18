@@ -1,7 +1,7 @@
-package dev.ajkneisl.home.printer.routines
+package dev.ajkneisl.home.routines
 
-import dev.ajkneisl.home.printer.*
-import dev.ajkneisl.home.printer.todoist.Todoist
+import dev.ajkneisl.home.PrintHandler
+import dev.ajkneisl.home.handle.todoist.Todoist
 import dev.ajkneisl.printerlib.Justification
 import dev.ajkneisl.printerlib.PrintDefaults
 import dev.ajkneisl.printerlib.PrintOptions
@@ -38,6 +38,4 @@ suspend fun homeRoutine() {
         PrintText(PrintDefaults.DEFAULT, 1, *dueToday.map { task -> task.content }.toTypedArray()),
         PrintText(PrintDefaults.SUB_TITLE, 0, "Have a good rest of your day day.")
     )
-
-    weatherRoutine()
 }

@@ -1,4 +1,4 @@
-package dev.ajkneisl.home.printer.todoist
+package dev.ajkneisl.home.handle.todoist
 
 import dev.ajkneisl.printerlib.*
 import org.json.JSONObject

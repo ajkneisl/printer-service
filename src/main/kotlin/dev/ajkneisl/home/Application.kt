@@ -1,28 +1,27 @@
-package dev.ajkneisl.home.printer
+package dev.ajkneisl.home
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
-import dev.ajkneisl.home.printer.error.Empty
-import dev.ajkneisl.home.printer.error.InvalidBody
-import dev.ajkneisl.home.printer.error.ServerError
-import dev.ajkneisl.home.printer.routines.routineRouting
-import dev.ajkneisl.home.printer.todoist.Todoist.todoistRouting
-import dev.ajkneisl.printerlib.*
+import dev.ajkneisl.home.email.EmailHandler.emailRouting
+import dev.ajkneisl.home.error.Empty
+import dev.ajkneisl.home.error.InvalidBody
+import dev.ajkneisl.home.error.ServerError
+import dev.ajkneisl.home.routines.RoutineHandler
+import dev.ajkneisl.home.handle.todoist.Todoist.todoistRouting
+import dev.ajkneisl.printerlib.PrintLine
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.cors.*
 import io.ktor.server.plugins.defaultheaders.*
 import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import java.lang.Exception
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
@@ -40,12 +39,13 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 @Suppress(
     "unused"
-) // application.conf references the main function. This annotation prevents the IDE from marking it
-// as unused.
+)
 fun Application.module() {
     val loggerContext: LoggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
     val rootLogger: Logger = loggerContext.getLogger("org.mongodb.driver")
     rootLogger.level = Level.OFF
+
+    RoutineHandler.registerRoutines()
 
     install(StatusPages) {
         status(HttpStatusCode.NotFound) { call, code ->
@@ -68,7 +68,7 @@ fun Application.module() {
 
     install(AutoHeadResponse)
     install(DoubleReceive)
-    install(DefaultHeaders) { header("X-Server", "ajkn.printer-service") }
+    install(DefaultHeaders) { header("X-Server", "ajkn.home") }
     install(ContentNegotiation) { json(JSON) }
 
     install(io.ktor.server.plugins.cors.routing.CORS) {
@@ -89,7 +89,7 @@ fun Application.module() {
 
     routing {
         route("/printer") {
-            routineRouting()
+            RoutineHandler.hookRoutines(this)
             emailRouting()
             todoistRouting()
 
@@ -106,22 +106,12 @@ fun Application.module() {
                         throw InvalidBody()
                     }
 
-                if (obj.isEmpty()) throw Empty()
+                if (obj.isEmpty())
+                    throw Empty()
 
                 PrintHandler.print(*obj.toTypedArray())
 
                 call.respond(HttpStatusCode.OK, mapOf("payload" to "The print has been queued."))
-            }
-
-            get("/health") {
-                call.respond(
-                    HttpStatusCode.OK,
-                    mapOf(
-                        "server" to "ajkn.printer-service",
-                        "version" to "0.1.4",
-                        "uptime" to "${getUptime()}"
-                    )
-                )
             }
         }
     }

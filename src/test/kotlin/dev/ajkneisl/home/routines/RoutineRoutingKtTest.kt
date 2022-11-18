@@ -1,4 +1,4 @@
-package dev.ajkneisl.home.printer.routines
+package dev.ajkneisl.home.routines
 
 import io.ktor.client.request.*
 import io.ktor.http.*

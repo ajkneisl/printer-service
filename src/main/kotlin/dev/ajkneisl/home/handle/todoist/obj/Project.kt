@@ -1,4 +1,4 @@
-package dev.ajkneisl.home.printer.todoist.obj
+package dev.ajkneisl.home.handle.todoist.obj
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

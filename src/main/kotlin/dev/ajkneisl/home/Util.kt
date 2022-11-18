@@ -1,6 +1,8 @@
-package dev.ajkneisl.home.printer
+package dev.ajkneisl.home
 
-import dev.ajkneisl.home.printer.error.AuthorizationError
+import dev.ajkneisl.home.error.AuthorizationError
+import dev.ajkneisl.printerlib.Print
+import dev.ajkneisl.printerlib.PrintRequest
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.server.application.*
@@ -25,3 +27,6 @@ fun ApplicationCall.authorize() {
 
 /** Web client for misc requests. */
 val WEB_CLI = HttpClient(CIO)
+
+/** Print request. */
+fun Print.print() = PrintHandler.print(PrintRequest(this))
